@@ -9,7 +9,7 @@ namespace Controller
     {
         [SerializeField] public Tile[] _selectedTiles = new Tile[2];
 
-        public int SelectedCount
+        private int SelectedCount
         {
             get
             {
@@ -28,12 +28,14 @@ namespace Controller
 
         private void SetSelectedTile(Tile tile)
         {
-            if (_selectedTiles[0] == null)
+            for (int i = 0; i < 2; i++)
             {
-                _selectedTiles[0] = tile;
-                return;
+                if (_selectedTiles[i] == null)
+                {
+                    _selectedTiles[i] = tile;
+                    break;
+                }
             }
-            _selectedTiles[1] = tile;
         }
 
         private void ResetSelectedTiles()
@@ -44,22 +46,20 @@ namespace Controller
 
         public async void SelectTile(Tile tile)
         {
-            if (!IsContained(tile))
-                SetSelectedTile(tile);
+            if (!SwapController.Instance.IsSwapping)
+            {
+                if (!IsContained(tile))
+                    SetSelectedTile(tile);
             
-            print(SelectedCount);
+                print(SelectedCount);
 
-            if (SelectedCount < 2) return;
+                if (SelectedCount < 2) return;
 
-            print($"Selected tiles: ({_selectedTiles[0].row},{_selectedTiles[0].col}) - ({_selectedTiles[1].row},{_selectedTiles[1].col})");
-            await SwapController.Instance.Swap(_selectedTiles[0], _selectedTiles[1]);
+                print($"Selected tiles: ({_selectedTiles[0].row},{_selectedTiles[0].col}) - ({_selectedTiles[1].row},{_selectedTiles[1].col})");
+                await SwapController.Instance.Swap(_selectedTiles[0], _selectedTiles[1]);
             
-            ResetSelectedTiles();
-        }
-        
-        private void Start()
-        {
-            print(SelectedCount);
+                ResetSelectedTiles();
+            }
         }
     }
 }

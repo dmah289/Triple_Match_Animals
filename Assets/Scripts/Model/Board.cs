@@ -13,11 +13,11 @@ namespace Model
     {
         [Header("Components")]
         [SerializeField] private Row[] _rows;
-        [SerializeField] private Tile[,] _tiles;
+        [SerializeField] public Tile[,] Tiles;
         
         [Header("Attributes")]
-        [SerializeField] private int Width => _tiles.GetLength(1);
-        [SerializeField] private int Height => _tiles.GetLength(0);
+        [SerializeField] public int Width => Tiles.GetLength(1);
+        [SerializeField] public int Height => Tiles.GetLength(0);
         
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -28,7 +28,7 @@ namespace Model
         
         private void Start()
         {
-            _tiles = new Tile[_rows.Length, _rows.Max(row => row.tiles.Length)];
+            Tiles = new Tile[_rows.Length, _rows.Max(row => row.tiles.Length)];
 
             for (int row = 0; row < Height; row++)
             {
@@ -39,7 +39,7 @@ namespace Model
                     tile.col = col;
                     tile.Item = ItemDatabase.Items[Random.Range(0, ItemDatabase.Items.Length)];
                     
-                    _tiles[row, col] = tile;
+                    Tiles[row, col] = tile;
                 }
             }
         }

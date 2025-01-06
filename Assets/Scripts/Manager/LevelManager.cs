@@ -12,7 +12,7 @@ namespace Manager
         private void Start()
         {
             _boardTransform.localScale = Vector3.zero;
-            _boardTransform.DOScale(1, 1).SetEase(Ease.OutBounce).SetDelay(1);
+            _boardTransform.DOScale(1, 1).SetEase(Ease.OutBack).SetDelay(0.5f);
         }
     }
 }

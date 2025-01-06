@@ -34,14 +34,16 @@ namespace Model
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            _tileSpriteRenderer = GetComponent<SpriteRenderer>();
-            IconTransform = transform.GetChild(0);
-            IconSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            if (!Application.isPlaying)
+            {
+                _tileSpriteRenderer = GetComponent<SpriteRenderer>();
+                IconTransform = transform.GetChild(0);
+                IconSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
 
-            row = transform.parent.GetSiblingIndex();
-            col = transform.GetSiblingIndex();
-            gameObject.name = "Tile[" + row + "," + col + "]";
-            
+                row = transform.parent.GetSiblingIndex();
+                col = transform.GetSiblingIndex();
+                gameObject.name = "Tile[" + row + "," + col + "]";
+            }
         }
 #endif
         private void Awake()
@@ -54,6 +56,12 @@ namespace Model
         private void OnMouseDown()
         {
             SelectionController.Instance.SelectTile(this);
+        }
+
+        public void UpdateIconReference()
+        {
+            IconTransform = transform.GetChild(0);
+            IconSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
         }
     }
 }

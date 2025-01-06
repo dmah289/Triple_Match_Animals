@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Framework;
@@ -9,9 +10,12 @@ namespace Controller
     public class SwapController : Singleton<SwapController>
     {
         [SerializeField] private float _swapDuration = 0.25f;
+        [SerializeField] public bool IsSwapping;
         
         public async Task Swap(Tile tile1, Tile tile2)
         {
+            IsSwapping = true;
+            
             SpriteRenderer icon1 = tile1.IconSpriteRenderer;
             SpriteRenderer icon2 = tile2.IconSpriteRenderer;
 
@@ -27,11 +31,14 @@ namespace Controller
             
             icon1Transform.SetParent(tile2.transform);
             icon2Transform.SetParent(tile1.transform);
-
-            tile1.IconSpriteRenderer = icon2;
-            tile2.IconSpriteRenderer = icon1;
+            
+            tile1.UpdateIconReference();
+            tile2.UpdateIconReference();
 
             (tile1.Item, tile2.Item) = (tile2.Item, tile1.Item);
+
+            await Task.Yield();
+            IsSwapping = false;
         }
     }
 }
