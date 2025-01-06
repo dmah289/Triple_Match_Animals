@@ -61,7 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BorderThickness: 0.03
+    - _BorderThickness: 0.025
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -77,8 +77,8 @@ Material:
     - _Roundness: 0
     - _ShineInterval: 1
     - _ShinePause: 5
-    - _ShineSpeed: 0.35
-    - _ShineWidth: 0.15
+    - _ShineSpeed: 0.5
+    - _ShineWidth: 0.2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -89,5 +89,6 @@ Material:
     - _BorderColor: {r: 0.24688502, g: 0.7169812, b: 0.25485355, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _ShineColor: {r: 1, g: 1, b: 1, a: 1}
+    - _ShineColor: {r: 0.12629052, g: 0.16385274, b: 0.8113208, a: 1}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1

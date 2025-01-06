@@ -58,7 +58,7 @@ public class Loading : MonoBehaviour
     {
         _process.fillAmount = 0;
 
-        AsyncOperation loading = SceneManager.LoadSceneAsync(1);
+        AsyncOperation loading = SceneManager.LoadSceneAsync(1); 
         loading.allowSceneActivation = false;
 
         float timer = 0;
