@@ -45,6 +45,10 @@ namespace Model
                 gameObject.name = "Tile[" + row + "," + col + "]";
             }
         }
+        public override string ToString()
+        {
+            return $"Tile[{row},{col}]";
+        }
 #endif
         private void Awake()
         {
@@ -58,10 +62,13 @@ namespace Model
             SelectionController.Instance.SelectTile(this);
         }
 
-        public void UpdateIconReference()
+        public void UpdateNewIcon(Item newItem)
         {
             IconTransform = transform.GetChild(0);
             IconSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            Item = newItem;
         }
+
+        
     }
 }

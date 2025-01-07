@@ -50,8 +50,8 @@ public class Loading : MonoBehaviour
 
     public void AnimatingLogo()
     {
-        _logo.DOAnchorPos(_targetPos, _loadingDuration * 0.8f, false).SetEase(Ease.OutElastic);
-        _logo.DOScale(0, _loadingDuration * 0.3f).SetEase(Ease.InOutElastic).SetDelay(_loadingDuration*0.6f);
+        _logo.DOAnchorPos(_targetPos, _loadingDuration * 0.8f, false).SetEase(Ease.OutBack);
+        _logo.DOScale(0, _loadingDuration * 0.3f).SetEase(Ease.InBack).SetDelay(_loadingDuration*0.6f);
     }
 
     private async void AnimateLoadingBar()

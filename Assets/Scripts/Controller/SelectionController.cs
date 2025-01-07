@@ -57,6 +57,8 @@ namespace Controller
 
                 print($"Selected tiles: ({_selectedTiles[0].row},{_selectedTiles[0].col}) - ({_selectedTiles[1].row},{_selectedTiles[1].col})");
                 await SwapController.Instance.Swap(_selectedTiles[0], _selectedTiles[1]);
+                MatchController.Instance.PopTileMatched(_selectedTiles[0]);
+                MatchController.Instance.PopTileMatched(_selectedTiles[1]);
             
                 ResetSelectedTiles();
             }

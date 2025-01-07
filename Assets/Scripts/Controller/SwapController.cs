@@ -32,12 +32,12 @@ namespace Controller
             icon1Transform.SetParent(tile2.transform);
             icon2Transform.SetParent(tile1.transform);
             
-            tile1.UpdateIconReference();
-            tile2.UpdateIconReference();
-
-            (tile1.Item, tile2.Item) = (tile2.Item, tile1.Item);
+            Item item1 = tile1.Item;
+            tile1.UpdateNewIcon(tile2.Item);
+            tile2.UpdateNewIcon(item1);
 
             await Task.Yield();
+            
             IsSwapping = false;
         }
     }

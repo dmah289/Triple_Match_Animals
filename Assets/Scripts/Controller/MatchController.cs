@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using Framework;
 using Model;
 using UnityEngine;
@@ -32,13 +33,27 @@ namespace Controller
                 int newRow = tile.row + offsets[i].x;
                 int newCol = tile.col + offsets[i].y;
 
-                if (IsOutOfGrid(newRow, newCol))
-                    continue;
+                if (IsOutOfGrid(newRow, newCol)) continue;
+                
                 Tile currTile = Board.Instance.Tiles[newRow, newCol];
-                if(excludeTiles.Contains(currTile) || tile.Item.Equals(currTile.Item))
+                if(!excludeTiles.Contains(currTile) && tile.Item.Equals(currTile.Item))
                     result.AddRange(GetConnectedTiles(currTile, excludeTiles));
             }
             return result;
+        }
+
+        public bool IsPopable(Tile tile)
+        {
+            List<Tile> connectedTiles = GetConnectedTiles(tile, null);
+            return connectedTiles.Count > 3;
+        }
+
+        public void PopTileMatched(Tile tile)
+        {
+            if (IsPopable(tile))
+            {
+                print("Popable");
+            }
         }
     }
 }
