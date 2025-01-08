@@ -1,6 +1,9 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Framework;
+using Manager;
 using Model;
 using UnityEngine;
 
@@ -8,6 +11,7 @@ namespace Controller
 {
     public class MatchController : Singleton<MatchController>
     {
+        [Header("Matching Logic")]
         public static readonly Vector2Int[] offsets =
         {
             new Vector2Int(-1, 0),   // Left
@@ -15,6 +19,51 @@ namespace Controller
             new Vector2Int(0, -1),   // Top
             new Vector2Int(0, 1)     // Bottom
         };
+        private Queue<Tile> ChangedTiles = new();
+        
+        [Header("Animation Duration")]
+        [SerializeField] private Vector3 originalScale = new Vector3(0.15f, 0.15f, 0.15f);
+        [SerializeField] private float _popDuration = 0.5f;
+        [SerializeField] private float _popDelay = 0.1f;
+        [SerializeField] private float _genDuration = 0.25f;
+
+        public static event Action<SoundType> OnTilesPoppedSFX;
+
+        private void OnEnable()
+        {
+            SwapController.OnTileSwapped += TileSwappedCallback;
+        }
+
+        private void OnDisable()
+        {
+            SwapController.OnTileSwapped -= TileSwappedCallback;
+        }
+        
+        public void TileSwappedCallback(Tile tile)
+        {
+            StartCoroutine(TileSwappedCoroutine(tile));
+        }
+
+        private IEnumerator TileSwappedCoroutine(Tile tile)
+        {
+            ChangedTiles.Enqueue(tile);
+
+            while (ChangedTiles.Count > 0)
+            {
+                yield return HandleMatching(ChangedTiles.Dequeue());
+            }
+        }
+
+        private IEnumerator HandleMatching(Tile currTile)
+        {
+            List<Tile> connectedTiles = GetConnectedTiles(currTile, null);
+            
+            if(connectedTiles.Count < 3) yield break;
+
+            connectedTiles.ForEach(tile => ChangedTiles.Enqueue(tile));
+
+            yield return PopMatchedTiles(connectedTiles);
+        }
 
         private bool IsOutOfGrid(int newRow, int newCol)
         {
@@ -41,19 +90,32 @@ namespace Controller
             }
             return result;
         }
-
-        public bool IsPopable(Tile tile)
+        
+        private IEnumerator PopMatchedTiles(List<Tile> connectedTiles)
         {
-            List<Tile> connectedTiles = GetConnectedTiles(tile, null);
-            return connectedTiles.Count > 3;
-        }
-
-        public void PopTileMatched(Tile tile)
-        {
-            if (IsPopable(tile))
+            for (int i = 0; i < connectedTiles.Count; i++)
             {
-                print("Popable");
+                connectedTiles[i].IconTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InFlash).SetDelay(i*_popDelay);
+                OnTilesPoppedSFX?.Invoke(SoundType.Collect);
             }
+            
+            yield return Helper.NonAllocatingWait.GetWait(_popDuration + connectedTiles.Count * _popDelay);
+
+            for (int i = 0; i < connectedTiles.Count; i++)
+            {
+                connectedTiles[i].GenerateNewItem();
+            }
+
+            yield return Helper.NonAllocatingWait.WaitForEndOfFrameNonAllocating;
+
+            for (int i = 0; i < connectedTiles.Count; i++)
+            {
+                connectedTiles[i].IconTransform.DOScale(originalScale, _genDuration).SetEase(Ease.OutFlash);
+            }
+            
+            yield return Helper.NonAllocatingWait.GetWait(_genDuration);
+            
+            yield return Helper.NonAllocatingWait.WaitForEndOfFrameNonAllocating;
         }
     }
 }

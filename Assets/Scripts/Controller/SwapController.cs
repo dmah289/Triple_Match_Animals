@@ -4,6 +4,7 @@ using DG.Tweening;
 using Framework;
 using Model;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Controller
 {
@@ -11,6 +12,8 @@ namespace Controller
     {
         [SerializeField] private float _swapDuration = 0.25f;
         [SerializeField] public bool IsSwapping;
+
+        public static event Action<Tile> OnTileSwapped;
         
         public async Task Swap(Tile tile1, Tile tile2)
         {
@@ -37,6 +40,17 @@ namespace Controller
             tile2.UpdateNewIcon(item1);
 
             await Task.Yield();
+
+            if (Random.Range(3, 31) % 2 == 0)
+            {
+                OnTileSwapped?.Invoke(tile1);
+                OnTileSwapped?.Invoke(tile2);
+            }
+            else
+            {
+                OnTileSwapped?.Invoke(tile2);
+                OnTileSwapped?.Invoke(tile1);
+            }
             
             IsSwapping = false;
         }

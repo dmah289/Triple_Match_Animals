@@ -1,5 +1,6 @@
 using System;
 using Framework;
+using Manager;
 using Model;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ namespace Controller
     public class SelectionController : Singleton<SelectionController>
     {
         [SerializeField] public Tile[] _selectedTiles = new Tile[2];
+
+        public static event Action<SoundType> OnTileSelectedSFX;
 
         private int SelectedCount
         {
@@ -33,6 +36,7 @@ namespace Controller
                 if (_selectedTiles[i] == null)
                 {
                     _selectedTiles[i] = tile;
+                    OnTileSelectedSFX?.Invoke(SoundType.Click);
                     break;
                 }
             }
@@ -57,8 +61,6 @@ namespace Controller
 
                 print($"Selected tiles: ({_selectedTiles[0].row},{_selectedTiles[0].col}) - ({_selectedTiles[1].row},{_selectedTiles[1].col})");
                 await SwapController.Instance.Swap(_selectedTiles[0], _selectedTiles[1]);
-                MatchController.Instance.PopTileMatched(_selectedTiles[0]);
-                MatchController.Instance.PopTileMatched(_selectedTiles[1]);
             
                 ResetSelectedTiles();
             }

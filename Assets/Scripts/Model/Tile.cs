@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Controller;
+using Manager;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Model
 {
@@ -69,6 +71,9 @@ namespace Model
             Item = newItem;
         }
 
-        
+        public void GenerateNewItem()
+        {
+            Item = ItemDatabase.Items[Random.Range(0, ItemDatabase.Items.Length)];
+        }
     }
 }
