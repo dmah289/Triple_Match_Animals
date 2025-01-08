@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 079ad5908871a184fa2927e494e92ca8, type: 3}
   m_Name: Hippo
   m_EditorClassIdentifier: 
-  Value: 0
+  Value: 3
   Sprite: {fileID: 21300000, guid: 96e6e9027d90f8a4bae7f43eb9c47628, type: 3}

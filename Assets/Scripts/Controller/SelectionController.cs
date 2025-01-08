@@ -60,7 +60,7 @@ namespace Controller
                 if (SelectedCount < 2) return;
 
                 print($"Selected tiles: ({_selectedTiles[0].row},{_selectedTiles[0].col}) - ({_selectedTiles[1].row},{_selectedTiles[1].col})");
-                await SwapController.Instance.Swap(_selectedTiles[0], _selectedTiles[1]);
+                await SwapController.Instance.SwapProcess(_selectedTiles[0], _selectedTiles[1]);
             
                 ResetSelectedTiles();
             }

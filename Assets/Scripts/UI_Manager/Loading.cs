@@ -24,6 +24,8 @@ public class Loading : MonoBehaviour
 
     private async void Start()
     {
+        _logo.anchoredPosition = _hidenPos;
+        
         await Task.Delay(1000);
 
         _loadingTxtStatus = new string[3] { "LOADING.", "LOADING..", "LOADING..." };
@@ -50,22 +52,27 @@ public class Loading : MonoBehaviour
 
     public void AnimatingLogo()
     {
-        _logo.DOAnchorPos(_targetPos, _loadingDuration * 0.8f, false).SetEase(Ease.OutBack);
-        _logo.DOScale(0, _loadingDuration * 0.3f).SetEase(Ease.InBack).SetDelay(_loadingDuration*0.6f);
+        _logo.DOAnchorPos(_targetPos, _loadingDuration * 0.5f, false).SetEase(Ease.OutBack);
     }
 
     private async void AnimateLoadingBar()
     {
         _process.fillAmount = 0;
 
-        AsyncOperation loading = SceneManager.LoadSceneAsync(1); 
+        AsyncOperation loading = SceneManager.LoadSceneAsync(1);
         loading.allowSceneActivation = false;
 
         float timer = 0;
+        bool stuck = false;
 
         while(timer < _loadingDuration)
         {
             timer += Time.deltaTime;
+            if (timer > 0.8f * _loadingDuration && !stuck)
+            {
+                await Task.Delay(1200);
+                stuck = true;
+            }
             _process.fillAmount = timer / _loadingDuration;
             await Task.Yield();
         }

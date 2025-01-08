@@ -19,7 +19,7 @@ namespace Controller
             new Vector2Int(0, -1),   // Top
             new Vector2Int(0, 1)     // Bottom
         };
-        private Queue<Tile> ChangedTiles = new();
+        private Queue<Tile> _changedTiles = new();
         
         [Header("Animation Duration")]
         [SerializeField] private Vector3 originalScale = new Vector3(0.15f, 0.15f, 0.15f);
@@ -28,6 +28,7 @@ namespace Controller
         [SerializeField] private float _genDuration = 0.25f;
 
         public static event Action<SoundType> OnTilesPoppedSFX;
+        public static event Action<int> OnTilesPoppedScore;
 
         private void OnEnable()
         {
@@ -38,19 +39,42 @@ namespace Controller
         {
             SwapController.OnTileSwapped -= TileSwappedCallback;
         }
-        
-        public void TileSwappedCallback(Tile tile)
+
+        /// <summary>
+        /// Check if at least one tile will match with other neighbors at new position
+        /// </summary>
+        /// <param name="tiles">Selected Tiles</param>
+        /// <returns>bool</returns>
+        public bool CheckSwapAbility(Tile[] tiles)
         {
-            StartCoroutine(TileSwappedCoroutine(tile));
+            for (int i = 0; i < tiles.Length; i++)
+            {
+                if (GetConnectedTiles(tiles[i], null).Count >= 3)
+                    return true;
+            }
+            return false;
+        }
+        
+        public bool TileSwappedCallback(Tile[] tiles)
+        {
+            if(CheckSwapAbility(tiles))
+            {
+                StartCoroutine(TileSwappedCoroutine(tiles));
+                return true;
+            }
+            return false;
         }
 
-        private IEnumerator TileSwappedCoroutine(Tile tile)
+        private IEnumerator TileSwappedCoroutine(params Tile[] tiles)
         {
-            ChangedTiles.Enqueue(tile);
-
-            while (ChangedTiles.Count > 0)
+            for (int i = 0; i < tiles.Length; i++)
             {
-                yield return HandleMatching(ChangedTiles.Dequeue());
+                _changedTiles.Enqueue(tiles[i]);
+
+                while (_changedTiles.Count > 0)
+                {
+                    yield return HandleMatching(_changedTiles.Dequeue());
+                }
             }
         }
 
@@ -60,7 +84,7 @@ namespace Controller
             
             if(connectedTiles.Count < 3) yield break;
 
-            connectedTiles.ForEach(tile => ChangedTiles.Enqueue(tile));
+            connectedTiles.ForEach(tile => _changedTiles.Enqueue(tile));
 
             yield return PopMatchedTiles(connectedTiles);
         }
@@ -95,9 +119,10 @@ namespace Controller
         {
             for (int i = 0; i < connectedTiles.Count; i++)
             {
-                connectedTiles[i].IconTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InFlash).SetDelay(i*_popDelay);
+                connectedTiles[i].IconTransform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InCirc);
                 OnTilesPoppedSFX?.Invoke(SoundType.Collect);
             }
+            OnTilesPoppedScore?.Invoke(connectedTiles[0].Item.Value * connectedTiles.Count);
             
             yield return Helper.NonAllocatingWait.GetWait(_popDuration + connectedTiles.Count * _popDelay);
 
@@ -110,7 +135,7 @@ namespace Controller
 
             for (int i = 0; i < connectedTiles.Count; i++)
             {
-                connectedTiles[i].IconTransform.DOScale(originalScale, _genDuration).SetEase(Ease.OutFlash);
+                connectedTiles[i].IconTransform.DOScale(originalScale, _genDuration).SetEase(Ease.OutCubic);
             }
             
             yield return Helper.NonAllocatingWait.GetWait(_genDuration);
